@@ -57,7 +57,6 @@ def check_website_status(url):
         
         if status == 'up':
             try:
-                # Only get title if content is HTML and not too large
                 content_type = response.headers.get('content-type', '').lower()
                 if 'text/html' in content_type and len(response.content) < 1000000:  # 1MB limit
                     page_title = get_page_title(response.text)
@@ -126,11 +125,11 @@ def index(request):
                 'screenshot_url': check_result['screenshot_url']
             }
             
-            # Add success/error message
+            # success/error message
             if check_result['status'] == 'up':
-                messages.success(request, f"✅ Website {url} is UP! ({check_result['response_time']}ms)")
+                messages.success(request, f"Website {url} is UP! ({check_result['response_time']}ms)")
             else:
-                messages.error(request, f"❌ Website {url} is DOWN!")
+                messages.error(request, f"Website {url} is DOWN!")
     
     return render(request, 'checker/index.html', {
         'form': form,
