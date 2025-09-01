@@ -3,13 +3,13 @@ from django.utils import timezone
 
 class WebsiteCheck(models.Model):
     url = models.URLField(max_length=255)
-    status = models.CharField(max_length=10)  # 'up' or 'down'
+    status = models.CharField(max_length=10)
     response_time = models.FloatField(null=True, blank=True)
     status_code = models.IntegerField(null=True, blank=True)
     checked_at = models.DateTimeField(default=timezone.now)
     error_message = models.TextField(blank=True)
-    content = models.TextField(blank=True)  # Store website content
-    content_preview = models.CharField(max_length=200, blank=True)  # Short preview
+    page_title = models.CharField(max_length=255, blank=True)
+    screenshot_url = models.URLField(blank=True) 
 
     class Meta:
         ordering = ['-checked_at']
