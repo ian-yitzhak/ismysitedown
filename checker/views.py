@@ -104,10 +104,8 @@ def index(request):
         if form.is_valid():
             url = form.cleaned_data['url']
             
-            # Quick website status check
             check_result = check_website_status(url)
-            
-            # Save to database
+
             website_check = WebsiteCheck.objects.create(
                 url=url,
                 status=check_result['status'],

@@ -1,49 +1,68 @@
 {% extends 'checker/base.html' %}
 
 {% block content %}
-<div class="search-container">
-    <form method="post">
-        {% csrf_token %}
-        {{ form.url }}
-        <div class="buttons">
-            <button type="submit" class="btn">Check Status</button>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4">Check Website Status</h2>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.url }}
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">Check Status</button>
+                    </div>
+                </form>
+                
+                {% if result %}
+                <div class="mt-4">
+                    <div class="card {% if result.status == 'up' %}border-success{% else %}border-danger{% endif %}">
+                        <div class="card-header {% if result.status == 'up' %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+                            <h5 class="mb-0">
+                                {% if result.status == 'up' %}✅ UP{% else %}❌ DOWN{% endif %}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>URL:</strong> {{ result.url }}</p>
+                            
+                            {% if result.response_time %}
+                                <p><strong>Response Time:</strong> 
+                                    <span class="badge {% if result.response_time < 1000 %}bg-success{% elif result.response_time < 3000 %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {{ result.response_time }}ms
+                                    </span>
+                                </p>
+                            {% endif %}
+                            
+                            {% if result.page_title %}
+                                <p><strong>Title:</strong> {{ result.page_title }}</p>
+                            {% endif %}
+                            
+                            {% if result.status_code %}
+                                <p><strong>Status Code:</strong> 
+                                    <span class="badge bg-info">{{ result.status_code }}</span>
+                                </p>
+                            {% endif %}
+                            
+                            {% if result.error_message %}
+                                <div class="alert alert-danger">
+                                    <strong>Error:</strong> {{ result.error_message }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if result.screenshot_url and result.status == 'up' %}
+                                <div class="mt-3">
+                                    <img src="{{ result.screenshot_url }}" class="img-fluid rounded shadow" alt="Screenshot">
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
         </div>
-    </form>
-</div>
-
-{% if result %}
-<div class="result {% if result.status == 'up' %}success{% else %}error{% endif %}">
-    <h3 class="{% if result.status == 'up' %}status-up{% else %}status-down{% endif %}">
-        {% if result.status == 'up' %}
-            Website is UP
-        {% else %}
-            Website is DOWN
-        {% endif %}
-    </h3>
-    
-    <div class="info"><strong>URL:</strong> {{ result.url }}</div>
-    
-    {% if result.status_code %}
-        <div class="info"><strong>Status Code:</strong> {{ result.status_code }}</div>
-    {% endif %}
-    
-    {% if result.response_time %}
-        <div class="info"><strong>Response Time:</strong> {{ result.response_time }} ms</div>
-    {% endif %}
-    
-    {% if result.page_title %}
-        <div class="info"><strong>Page Title:</strong> {{ result.page_title }}</div>
-    {% endif %}
-    
-    {% if result.error_message %}
-        <div class="info" style="color: #ea4335;"><strong>Error:</strong> {{ result.error_message }}</div>
-    {% endif %}
-    
-    {% if result.status == 'up' and result.screenshot_url %}
-    <div class="screenshot">
-        <img src="{{ result.screenshot_url }}" alt="Screenshot of {{ result.url }}" loading="lazy">
     </div>
-    {% endif %}
 </div>
-{% endif %}
 {% endblock %}
