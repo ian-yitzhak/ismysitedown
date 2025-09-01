@@ -1,110 +1,49 @@
 {% extends 'checker/base.html' %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-header bg-white">
-                <h3 class="mb-0">🌐 Check Website Status</h3>
-                <small class="text-muted">Fast and reliable website monitoring</small>
-            </div>
-            <div class="card-body">
-                <form method="post" class="mb-4">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="{{ form.url.id_for_label }}" class="form-label">Website URL</label>
-                        <div class="input-group">
-                            {{ form.url }}
-                            <button type="submit" class="btn btn-primary px-4">
-                                <span class="loading spinner-border spinner-border-sm me-2" role="status"></span>
-                                Check Status
-                            </button>
-                        </div>
-                        <small class="form-text text-muted">
-                            Enter any URL like google.com, https://github.com, or example.org
-                        </small>
-                    </div>
-                </form>
-                
-                {% if result %}
-                <div class="result-card card {% if result.status == 'up' %}success{% else %}error{% endif %} mt-4">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h5 class="card-title">
-                                    {% if result.status == 'up' %}
-                                        ✅ Website is UP!
-                                    {% else %}
-                                        ❌ Website is DOWN!
-                                    {% endif %}
-                                </h5>
-                                
-                                <p class="mb-2"><strong>URL:</strong> {{ result.url }}</p>
-                                
-                                {% if result.status_code %}
-                                    <p class="mb-2">
-                                        <strong>Status Code:</strong> 
-                                        <span class="badge {% if result.status_code < 400 %}bg-success{% else %}bg-danger{% endif %}">
-                                            {{ result.status_code }}
-                                        </span>
-                                    </p>
-                                {% endif %}
-                                
-                                {% if result.response_time %}
-                                    <p class="mb-2">
-                                        <strong>Response Time:</strong> 
-                                        <span class="badge {% if result.response_time < 1000 %}bg-success{% elif result.response_time < 3000 %}bg-warning{% else %}bg-danger{% endif %}">
-                                            {{ result.response_time }} ms
-                                        </span>
-                                    </p>
-                                {% endif %}
-                                
-                                {% if result.page_title %}
-                                    <p class="mb-2"><strong>Page Title:</strong> {{ result.page_title }}</p>
-                                {% endif %}
-                                
-                                {% if result.error_message %}
-                                    <div class="alert alert-danger mb-0">
-                                        <strong>Error:</strong> {{ result.error_message }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                            
-                            {% if result.status == 'up' and result.screenshot_url %}
-                            <div class="col-md-4">
-                                <div class="screenshot-container">
-                                    <img src="{{ result.screenshot_url }}" 
-                                         class="img-fluid rounded"
-                                         alt="Screenshot of {{ result.url }}"
-                                         style="width: 100%; height: auto;"
-                                         loading="lazy"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                    <div class="text-center p-3 text-muted" style="display: none;">
-                                        📷 Screenshot not available
-                                    </div>
-                                </div>
-                                <small class="text-muted d-block mt-2 text-center">
-                                    Live screenshot
-                                </small>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                
-                <div class="mt-4 p-3 bg-light rounded">
-                    <h6 class="mb-2">💡 Features:</h6>
-                    <ul class="small mb-0">
-                        <li>⚡ Fast response times (5-second timeout)</li>
-                        <li>🖼️ Live website screenshots</li>
-                        <li>📊 Response time monitoring</li>
-                        <li>🔒 Secure - no dangerous content display</li>
-                        <li>📱 Mobile-friendly interface</li>
-                    </ul>
-                </div>
-            </div>
+<div class="search-container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.url }}
+        <div class="buttons">
+            <button type="submit" class="btn">Check Status</button>
         </div>
-    </div>
+    </form>
 </div>
+
+{% if result %}
+<div class="result {% if result.status == 'up' %}success{% else %}error{% endif %}">
+    <h3 class="{% if result.status == 'up' %}status-up{% else %}status-down{% endif %}">
+        {% if result.status == 'up' %}
+            Website is UP
+        {% else %}
+            Website is DOWN
+        {% endif %}
+    </h3>
+    
+    <div class="info"><strong>URL:</strong> {{ result.url }}</div>
+    
+    {% if result.status_code %}
+        <div class="info"><strong>Status Code:</strong> {{ result.status_code }}</div>
+    {% endif %}
+    
+    {% if result.response_time %}
+        <div class="info"><strong>Response Time:</strong> {{ result.response_time }} ms</div>
+    {% endif %}
+    
+    {% if result.page_title %}
+        <div class="info"><strong>Page Title:</strong> {{ result.page_title }}</div>
+    {% endif %}
+    
+    {% if result.error_message %}
+        <div class="info" style="color: #ea4335;"><strong>Error:</strong> {{ result.error_message }}</div>
+    {% endif %}
+    
+    {% if result.status == 'up' and result.screenshot_url %}
+    <div class="screenshot">
+        <img src="{{ result.screenshot_url }}" alt="Screenshot of {{ result.url }}" loading="lazy">
+    </div>
+    {% endif %}
+</div>
+{% endif %}
 {% endblock %}
